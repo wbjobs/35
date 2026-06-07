@@ -6,10 +6,9 @@ import { setVelocity } from './movement';
 import { AI_STATE } from '../../constants/gameConfig';
 
 interface AIAction {
-  type: 'move' | 'attack' | 'idle';
-  dx?: number;
-  dy?: number;
-  targetEid?: number;
+  type: 'move';
+  dx: number;
+  dy: number;
 }
 
 export function processAI(world: any): AIAction[] {
@@ -29,25 +28,17 @@ export function processAI(world: any): AIAction[] {
 
 function processMonsterAI(eid: number): AIAction | null {
   const aiType = AI.type[eid];
-  const currentState = AI.state[eid];
 
   const playerX = Position.x[playerEid];
   const playerY = Position.y[playerEid];
   const monsterX = Position.x[eid];
   const monsterY = Position.y[eid];
 
-  const distanceToPlayer = getDistance(monsterX, monsterY, playerX, playerY);
   const adjacentEnemy = findAdjacentEnemy(eid);
-
   if (adjacentEnemy !== null) {
     AI.state[eid] = AI_STATE.ATTACK;
     AI.targetEid[eid] = adjacentEnemy;
-    return {
-      type: 'attack',
-      targetEid: adjacentEnemy,
-      dx: playerX - monsterX,
-      dy: playerY - monsterY,
-    };
+    return null;
   }
 
   const nearestEnemy = findNearestEnemy(eid, 4);
@@ -157,11 +148,9 @@ function getPatrolDirection(eid: number): { dx: number; dy: number } | null {
 }
 
 function executeAIAction(eid: number, action: AIAction): void {
-  if (action.type === 'move' && action.dx !== undefined && action.dy !== undefined) {
-    setVelocity(eid, action.dx, action.dy);
-    AI.lastMoveX[eid] = action.dx;
-    AI.lastMoveY[eid] = action.dy;
-  }
+  setVelocity(eid, action.dx, action.dy);
+  AI.lastMoveX[eid] = action.dx;
+  AI.lastMoveY[eid] = action.dy;
 }
 
 export function getMonsterAIState(eid: number): number {

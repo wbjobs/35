@@ -33,26 +33,11 @@ export function playerMove(dx: number, dy: number): TurnResult {
   const targetX = playerX + dx;
   const targetY = playerY + dy;
 
-  const adjacentEnemy = findAdjacentEnemy(playerEid);
-  if (adjacentEnemy !== null) {
-    const enemyX = Position.x[adjacentEnemy];
-    const enemyY = Position.y[adjacentEnemy];
-    if (enemyX === targetX && enemyY === targetY) {
-      const result = attack(playerEid, adjacentEnemy);
-      if (result.attackerKilled) {
-        world.gamePhase = GAME_PHASE.GAME_OVER;
-        return { success: true, gameOver: true };
-      }
-      endPlayerTurn();
-      return { success: true };
-    }
-  }
-
   const checkResult = checkCollision(targetX, targetY, playerEid);
 
   if (!checkResult.canMove && checkResult.collisionType === 'monster' && checkResult.targetEid !== undefined) {
     const result = attack(playerEid, checkResult.targetEid);
-    if (result.attackerKilled) {
+    if (isPlayerDead()) {
       world.gamePhase = GAME_PHASE.GAME_OVER;
       return { success: true, gameOver: true };
     }
@@ -107,6 +92,8 @@ function monsterTurn(): void {
 
   processAI(world);
 
+  processMovement(world);
+
   const monsters = monsterQuery(world);
   for (const eid of monsters) {
     const adjacentEnemy = findAdjacentEnemy(eid);
@@ -117,13 +104,6 @@ function monsterTurn(): void {
         return;
       }
     }
-  }
-
-  processMovement(world);
-
-  if (isPlayerDead()) {
-    world.gamePhase = GAME_PHASE.GAME_OVER;
-    return;
   }
 
   if (world.turn !== undefined) {

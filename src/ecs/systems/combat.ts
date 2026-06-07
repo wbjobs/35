@@ -13,8 +13,6 @@ export interface CombatResult {
 
 export function attack(attackerEid: number, defenderEid: number): CombatResult {
   const attackerAttack = Combat.attack[attackerEid];
-  const attackerDefense = Combat.defense[attackerEid];
-  const defenderAttack = Combat.attack[defenderEid];
   const defenderDefense = Combat.defense[defenderEid];
 
   const damageToDefender = Math.max(1, attackerAttack - defenderDefense + Math.floor(Math.random() * 5));
@@ -23,7 +21,6 @@ export function attack(attackerEid: number, defenderEid: number): CombatResult {
 
   const defenderKilled = Health.current[defenderEid] <= 0;
 
-  let damageToAttacker = 0;
   let attackerKilled = false;
 
   if (defenderKilled) {
@@ -36,17 +33,9 @@ export function attack(attackerEid: number, defenderEid: number): CombatResult {
   } else {
     if (Player[attackerEid]) {
       addMessage(`你对怪物造成了 ${damageToDefender} 点伤害！`);
-      damageToAttacker = Math.max(1, defenderAttack - attackerDefense + Math.floor(Math.random() * 3));
-      const attackerCurrentHealth = Health.current[attackerEid];
-      Health.current[attackerEid] = Math.max(0, attackerCurrentHealth - damageToAttacker);
-      addMessage(`怪物反击！对你造成了 ${damageToAttacker} 点伤害。`);
-      attackerKilled = Health.current[attackerEid] <= 0;
-
-      if (attackerKilled) {
-        addMessage(`你被击败了...`);
-      }
     } else if (Monster[attackerEid]) {
       addMessage(`怪物对你造成了 ${damageToDefender} 点伤害！`);
+      attackerKilled = Health.current[defenderEid] <= 0;
     }
   }
 
