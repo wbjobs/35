@@ -13,6 +13,11 @@ import {
   Stairs,
   Wall,
   EmojiIndex,
+  Skeleton,
+  Mage,
+  Ghost,
+  Ranged,
+  PhaseThroughWalls,
 } from './components';
 import { COLORS, PLAYER_BASE, MONSTER_TYPES } from '../constants/gameConfig';
 
@@ -89,6 +94,22 @@ export function createMonster(
   addComponent(world, Combat, eid);
   addComponent(world, AI, eid);
   addComponent(world, Monster, eid);
+
+  if (type === 'SKELETON') {
+    addComponent(world, Skeleton, eid);
+  } else if (type === 'MAGE') {
+    addComponent(world, Mage, eid);
+  } else if (type === 'GHOST') {
+    addComponent(world, Ghost, eid);
+  }
+
+  if ((monsterConfig as any).isRanged) {
+    addComponent(world, Ranged, eid);
+  }
+
+  if ((monsterConfig as any).canPhaseThroughWalls) {
+    addComponent(world, PhaseThroughWalls, eid);
+  }
 
   Position.x[eid] = x;
   Position.y[eid] = y;
@@ -189,6 +210,11 @@ export function removeGameEntity(eid: number): void {
   if (hasComponent(world, Trap, eid)) removeComponent(world, Trap, eid);
   if (hasComponent(world, Stairs, eid)) removeComponent(world, Stairs, eid);
   if (hasComponent(world, Wall, eid)) removeComponent(world, Wall, eid);
+  if (hasComponent(world, Skeleton, eid)) removeComponent(world, Skeleton, eid);
+  if (hasComponent(world, Mage, eid)) removeComponent(world, Mage, eid);
+  if (hasComponent(world, Ghost, eid)) removeComponent(world, Ghost, eid);
+  if (hasComponent(world, Ranged, eid)) removeComponent(world, Ranged, eid);
+  if (hasComponent(world, PhaseThroughWalls, eid)) removeComponent(world, PhaseThroughWalls, eid);
   removeEntity(world, eid);
 }
 

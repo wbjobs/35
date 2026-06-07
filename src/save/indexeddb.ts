@@ -280,6 +280,9 @@ function getMonsterType(eid: number): string {
     5: 'GOBLIN',
     6: 'ORC',
     7: 'SLIME',
+    8: 'SKELETON',
+    9: 'MAGE',
+    10: 'GHOST',
   };
   return emojiToType[emojiIndex] || 'GOBLIN';
 }

@@ -33,6 +33,9 @@ const EMOJI_MAP: Record<number, string> = {
   [EmojiIndex.GOBLIN]: '👺',
   [EmojiIndex.ORC]: '👿',
   [EmojiIndex.SLIME]: '🟢',
+  [EmojiIndex.SKELETON]: '💀',
+  [EmojiIndex.MAGE]: '🧙',
+  [EmojiIndex.GHOST]: '👻',
 };
 
 export class RenderSystem {

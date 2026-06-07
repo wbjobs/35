@@ -47,6 +47,13 @@ export const Trap = defineComponent();
 export const Stairs = defineComponent();
 export const Wall = defineComponent();
 
+export const Skeleton = defineComponent();
+export const Mage = defineComponent();
+export const Ghost = defineComponent();
+
+export const Ranged = defineComponent();
+export const PhaseThroughWalls = defineComponent();
+
 export const EmojiIndex = {
   PLAYER: 0,
   MONSTER: 1,
@@ -56,6 +63,9 @@ export const EmojiIndex = {
   GOBLIN: 5,
   ORC: 6,
   SLIME: 7,
+  SKELETON: 8,
+  MAGE: 9,
+  GHOST: 10,
 } as const;
 
 export const playerQuery = defineQuery([Player, Position, Health, Combat]);
@@ -78,6 +88,11 @@ export const serialize = defineSerializer([
   Chest,
   Trap,
   Stairs,
+  Skeleton,
+  Mage,
+  Ghost,
+  Ranged,
+  PhaseThroughWalls,
 ]);
 
 export const deserialize = defineDeserializer([
@@ -91,4 +106,9 @@ export const deserialize = defineDeserializer([
   Chest,
   Trap,
   Stairs,
+  Skeleton,
+  Mage,
+  Ghost,
+  Ranged,
+  PhaseThroughWalls,
 ]);

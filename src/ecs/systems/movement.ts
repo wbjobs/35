@@ -1,7 +1,9 @@
 import { world, addMessage } from '../world';
-import { Position, Velocity, velocityQuery, Player, Monster, Chest, Trap, Stairs, Renderable, Health, playerQuery } from '../components';
+import { Position, Velocity, velocityQuery, Player, Monster, Chest, Trap, Stairs, Renderable, Health, playerQuery, Ghost, PhaseThroughWalls } from '../components';
 import { checkCollision, CollisionResult } from './collision';
 import { removeGameEntity } from '../world';
+import { MONSTER_TYPES } from '../../constants/gameConfig';
+import { getMonsterType } from './ai';
 
 export function processMovement(world: any): {
   triggeredTrap?: number;
@@ -24,11 +26,38 @@ export function processMovement(world: any): {
     const newX = Position.x[eid] + vx;
     const newY = Position.y[eid] + vy;
 
-    const collision = checkCollision(newX, newY, eid);
+    const canPhaseThroughWalls = PhaseThroughWalls[eid] !== undefined;
+    const collision = checkCollision(newX, newY, eid, canPhaseThroughWalls);
 
-    if (collision.canMove) {
+    const canMove = collision.canMove || (canPhaseThroughWalls && collision.collisionType === 'wall');
+
+    if (canMove) {
       Position.x[eid] = newX;
       Position.y[eid] = newY;
+
+      if (Monster[eid]) {
+        const monsterType = getMonsterType(eid);
+        if (monsterType) {
+          const config = MONSTER_TYPES[monsterType] as any;
+          if (config.moveHealthCost && config.moveHealthCost > 0) {
+            const currentHealth = Health.current[eid];
+            const newHealth = Math.max(0, currentHealth - config.moveHealthCost);
+            Health.current[eid] = newHealth;
+
+            if (monsterType === 'GHOST') {
+              addMessage(`幽灵穿墙移动，损失 ${config.moveHealthCost} 点生命值。`);
+            }
+
+            if (newHealth <= 0) {
+              addMessage(`怪物因移动消耗过度而死亡！`);
+              removeGameEntity(eid);
+              Velocity.x[eid] = 0;
+              Velocity.y[eid] = 0;
+              continue;
+            }
+          }
+        }
+      }
 
       if (collision.collisionType === 'trap' && collision.targetEid !== undefined) {
         result.triggeredTrap = collision.targetEid;

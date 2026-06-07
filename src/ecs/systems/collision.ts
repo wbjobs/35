@@ -11,13 +11,14 @@ export interface CollisionResult {
 export function checkCollision(
   x: number,
   y: number,
-  ignoreEid: number = -1
+  ignoreEid: number = -1,
+  ignoreWalls: boolean = false
 ): CollisionResult {
   if (x < 0 || x >= MAP_WIDTH || y < 0 || y >= MAP_HEIGHT) {
     return { canMove: false, collisionType: 'outOfBounds' };
   }
 
-  if (world.map && world.map[y][x] === TILE.WALL) {
+  if (!ignoreWalls && world.map && world.map[y][x] === TILE.WALL) {
     return { canMove: false, collisionType: 'wall' };
   }
 
